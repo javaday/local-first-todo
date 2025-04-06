@@ -1,7 +1,6 @@
 import { i } from "@instantdb/react";
 
 const auditFields = {
-	isDeleted: i.boolean(),
 	createdAt: i.number().indexed(),
 	createdBy: i.string().indexed(),
 	updatedAt: i.number().indexed(),
@@ -14,7 +13,6 @@ const _schema = i.schema({
 			email: i.any().unique().indexed(),
 		}),
 		members: i.entity({
-			userId: i.string().unique(),
 			role: i.string().indexed(),
 			email: i.string().indexed(),
 			name: i.string().indexed(),

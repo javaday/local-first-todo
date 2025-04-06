@@ -8,7 +8,6 @@ dayjs.extend(utc);
 
 export class MemberModel extends AuditModel {
 
-	userId: string = '';
 	role: string = '';
 	email: string = '';
 	name: string = '';
@@ -33,7 +32,6 @@ export class MemberModel extends AuditModel {
 	getData() {
 		const baseData = super.getData();
 		return {
-			userId: this.userId,
 			role: this.role,
 			email: this.email,
 			name: this.name,
@@ -47,7 +45,6 @@ export class MemberModel extends AuditModel {
 	constructor(data: any = {}) {
 		super(data);
 		this.id = data.id || '';
-		this.userId = data.userId || '';
 		this.role = data.role || '';
 		this.email = data.email || '';
 		this.name = data.name || '';

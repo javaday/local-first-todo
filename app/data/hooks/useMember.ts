@@ -6,6 +6,7 @@ import { MemberModel } from "~/data/models/member.model";
 
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
+import { showErrorNotification } from "~/utils/notification.utils";
 
 dayjs.extend(utc);
 
@@ -83,5 +84,39 @@ export const useMember = () => {
 		});
 	}
 
-	return { member, updateMember };
+	const sendCode = (email: string): Promise<boolean> => {
+
+		return new Promise((resolve, reject) => {
+			db.auth.sendMagicCode({ email })
+				.then(() => {
+					resolve(true);
+				})
+				.catch((err) => {
+					showErrorNotification('Magic Code Error', err);
+					reject(err);
+				});
+		});
+	}
+
+	const verifyCode = (email: string, code: string): Promise<boolean> => {
+
+		return new Promise((resolve, reject) => {
+			db.auth.signInWithMagicCode({ email, code })
+				.then(() => {
+					resolve(true);
+				})
+				.catch((response) => {
+					showErrorNotification('Verify Code Error', response.body.message);
+					reject(response.body.message);
+				});
+		});
+	}
+
+	return {
+		isLoading,
+		member,
+		updateMember,
+		sendCode,
+		verifyCode
+	};
 };
