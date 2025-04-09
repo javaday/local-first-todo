@@ -1,5 +1,5 @@
 import { ActionIcon, Stack, Tooltip } from "@mantine/core";
-import { IconWorld } from "@tabler/icons-react";
+import { IconListCheck } from "@tabler/icons-react";
 import { useEffect, useState, type JSX } from "react";
 import { useNavigate } from "react-router";
 import { MemberModel } from "~/data/models/member.model";
@@ -26,9 +26,9 @@ export function UserNavigation(props: UserNavigationProps) {
 
 		if (member) {
 			userLinks.push({
-				icon: <IconWorld size={48} />,
-				label: 'Organization',
-				href: '/organization',
+				icon: <IconListCheck size={48} />,
+				label: 'Lists',
+				href: '/lists',
 			});
 		}
 

@@ -1,4 +1,4 @@
-import { Box, Divider, Group, rem, Stepper } from "@mantine/core";
+import { Box, Divider, Group, rem, Stepper, Text } from "@mantine/core";
 import { IconMailOpened, IconUserCheck } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
@@ -79,7 +79,7 @@ export function MagicCode() {
 		return (
 			<Box mx="auto">
 				<Group justify="center">
-					<h3>You must be online to log in.</h3>
+					<Text fw={700} c="red">You must be online to log in.</Text>
 				</Group>
 			</Box>
 		);
