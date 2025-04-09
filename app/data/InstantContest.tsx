@@ -10,7 +10,12 @@ interface InstantContextValue {
 	db: InstantReactWebDatabase<AppSchema>;
 }
 
-const db = init<AppSchema>({ appId: INSTANT_APP_ID });
+const db = init<AppSchema>({
+	appId: INSTANT_APP_ID,
+	devtool: {
+		position: 'bottom-left',
+	},
+});
 
 const InstantContext = createContext<InstantContextValue>({
 	db,
