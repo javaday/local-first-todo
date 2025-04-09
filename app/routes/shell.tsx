@@ -1,9 +1,8 @@
-import { AppShell, Burger, Center, Grid, Group, Stack, Text, Title } from "@mantine/core";
+import { Anchor, AppShell, Burger, Center, Grid, Group, Title } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useEffect, useState } from "react";
 import { Outlet } from "react-router";
 import { default as Logo } from "~/components/Logo";
-import { MagicCode } from "~/components/MagicCode";
 import { NetworkStatus } from "~/components/NetworkStatus";
 import { UserMenu } from "~/components/UserMenu";
 import { UserNavigation } from "~/components/UserNavigation";
@@ -15,11 +14,14 @@ export default function ShellLayout() {
 
 	const [currentMember, setCurrentMember] = useState<MemberModel | null>(null);
 	const [opened, { toggle }] = useDisclosure();
-	const { member } = useMember();
+	const { isLoading, member } = useMember();
 
 	useEffect(() => {
 		if (member) {
 			setCurrentMember(member);
+		}
+		else {
+			setCurrentMember(null);
 		}
 	}, [member]);
 
@@ -57,15 +59,9 @@ export default function ShellLayout() {
 				</>
 			}
 			{!currentMember &&
-				<AppShell.Main pl={20} pr={20} pb={20}>
-					<Center pt={20}>
-						<Stack gap={5} align={'center'}>
-							<Logo height={150} />
-							<Text className={'lilita-one-regular'}>Local-First ToDo</Text>
-							<MagicCode />
-						</Stack>
-					</Center >
-				</AppShell.Main>
+				<Center mt={50}>
+					<Anchor href="/login">Login</Anchor>
+				</Center>
 			}
 		</AppShell>
 	);

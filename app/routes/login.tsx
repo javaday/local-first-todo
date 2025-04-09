@@ -11,7 +11,7 @@ export default function Login() {
 	return (
 		<Center pt={50}>
 			<Stack gap={5} align={'center'}>
-				<Logo height={250} />
+				<Logo height={200} />
 				<Text className={'lilita-one-regular'}>Local-First ToDo</Text>
 				<MagicCode />
 			</Stack>
