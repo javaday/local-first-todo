@@ -60,6 +60,39 @@ const getInvitation = async (id: string) => {
 	}
 }
 
+const addInvitation = async (model: InvitationModel) => {
+
+	try {
+		const data = model.getData();
+
+		data.createdAt = dayjs().utc().unix();
+		data.createdBy = 'system';
+
+		const batch = [
+			tx.invitations[data.id]
+				.update(data)
+		];
+
+		if (data.listId) {
+			batch.push(
+				tx.lists[data.listId]
+					.link({
+						invitations: data.id
+					})
+			);
+		}
+
+		await db.transact(batch);
+
+		model = new InvitationModel(data);
+	}
+	catch (err) {
+		console.log(err)
+	}
+
+	return model;
+}
+
 const updateInvitation = async (model: InvitationModel) => {
 
 	try {
@@ -83,7 +116,9 @@ const updateInvitation = async (model: InvitationModel) => {
 }
 
 export {
+	addInvitation,
 	getInvitation,
 	getNewInvitations,
 	updateInvitation
 };
+

@@ -1,25 +1,29 @@
-import { Button, Group, Modal, Stack, TextInput, Tooltip } from "@mantine/core";
+import { Box, Button, Group, LoadingOverlay, Modal, Stack, TextInput, Tooltip } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
+import { useFetcher } from "react-router";
+import { MemberModel } from "~/data/models/member.model";
 import { useScreenInfo } from "~/hooks/useScreenInfo";
+import { showErrorNotification, showSuccessNotification } from "~/utils/notification.utils";
 
 export const defaultInviteMemberDialogProps: InviteMemberDialogProps = {
 	opened: false,
-	onSave: () => { },
+	member: new MemberModel(),
 	onCancel: () => { }
 };
 
 export interface InviteMemberDialogProps {
 	opened: boolean;
-	onSave: (email: string) => void;
+	member: MemberModel;
 	onCancel: () => void;
 }
 
 export const InviteMemberDialog = (props: InviteMemberDialogProps) => {
 
-	const { opened, onSave, onCancel } = props;
+	const { opened, member, onCancel } = props;
 	const [ids, setIds] = useState<string[]>([]);
+	const inviteFetcher = useFetcher<{ sent: boolean, error: string }>();
 	const { isSmall } = useScreenInfo();
 
 	const emailRegex = /^[\w-./+]+@([\w-/+]+\.)+[\w-]{2,4}$/gi;
@@ -51,14 +55,38 @@ export const InviteMemberDialog = (props: InviteMemberDialogProps) => {
 		}
 	}, [opened]);
 
-	function trySave() {
+	useEffect(() => {
+		if (inviteFetcher.state === 'idle' && inviteFetcher.data) {
+			if (inviteFetcher.data.sent) {
+				showSuccessNotification('Invite Member', `'${form.values.email}' has been invited.`);
+				onCancel();
+			}
+			else {
+				showErrorNotification('Invite Member Error', inviteFetcher.data.error);
+			}
+		}
+	}, [inviteFetcher]);
+
+	function trySend() {
 
 		const result = form.validate();
 
 		if (!result.hasErrors) {
-			onSave(form.values.email);
+			sendInvite(form.values.email);
 		}
 	};
+
+	const sendInvite = (email: string) => {
+		const formData = new FormData();
+
+		formData.append('token', member.token);
+		formData.append('email', email);
+
+		inviteFetcher.submit(formData, {
+			action: '/api/invite/member',
+			method: 'POST'
+		});
+	}
 
 	return (
 		<>
@@ -68,9 +96,11 @@ export const InviteMemberDialog = (props: InviteMemberDialogProps) => {
 				title={'Invite Member'}
 				withCloseButton={true}
 				transitionProps={{ transition: 'fade', duration: 200 }}
+				size="auto"
 				centered={!isSmall}
 				fullScreen={isSmall}>
-				<>
+				<Box pos="relative">
+					<LoadingOverlay visible={inviteFetcher.state === 'submitting'} zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
 					<Stack>
 						<TextInput
 							withAsterisk
@@ -83,7 +113,7 @@ export const InviteMemberDialog = (props: InviteMemberDialogProps) => {
 						/>
 						<Group justify={'center'}>
 							<Tooltip label="Invite Member" openDelay={1000} withArrow>
-								<Button leftSection={<IconCheck size={18} />} aria-label="Invite Member" onClick={trySave}>
+								<Button leftSection={<IconCheck size={18} />} aria-label="Invite Member" onClick={trySend}>
 									Invite
 								</Button>
 							</Tooltip>
@@ -94,7 +124,7 @@ export const InviteMemberDialog = (props: InviteMemberDialogProps) => {
 							</Tooltip>
 						</Group>
 					</Stack>
-				</>
+				</Box>
 			</Modal >
 		</>
 	);
