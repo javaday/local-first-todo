@@ -31,6 +31,7 @@ const _schema = i.schema({
 			listId: i.string().indexed(),
 			label: i.string().indexed(),
 			isChecked: i.boolean(),
+			isDeleted: i.boolean(),
 			...auditFields
 		}),
 		invitations: i.entity({
@@ -48,9 +49,9 @@ const _schema = i.schema({
 			forward: { on: 'members', has: 'one', label: 'user' },
 			reverse: { on: '$users', has: 'one', label: 'member' },
 		},
-		userLists: {
+		memberLists: {
 			forward: { on: 'members', has: 'many', label: 'lists' },
-			reverse: { on: 'lists', has: 'many', label: 'users' },
+			reverse: { on: 'lists', has: 'many', label: 'members' },
 		},
 		listInvitations: {
 			forward: { on: 'lists', has: 'many', label: 'invitations' },

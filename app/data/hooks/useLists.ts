@@ -33,17 +33,23 @@ export const useLists = () => {
 
 	const addList = async (model: ListModel) => {
 
+		if (!user) {
+			return Promise.reject('A user is required.');
+		}
+
 		const data = model.getData();
 		const today = dayjs().utc();
 
+		data.memberId = user.id;
 		data.createdAt = today.unix();
-		data.createdBy = user?.id || '';
+		data.createdBy = user.id;
 
 		const batch = [
 			tx.lists[data.id]
-				.update(data)
+				.update(data),
+			tx.members[user.id]
 				.link({
-					member: data.memberId // link to member
+					lists: data.id // link to member
 				})
 		];
 
@@ -51,6 +57,10 @@ export const useLists = () => {
 	};
 
 	const updateList = async (model: ListModel) => {
+
+		if (!user) {
+			return Promise.reject('A user is required.');
+		}
 
 		const data = model.getData();
 		const today = dayjs().utc();
@@ -68,6 +78,10 @@ export const useLists = () => {
 
 	const deleteList = async (model: ListModel) => {
 
+		if (!user) {
+			return Promise.reject('A user is required.');
+		}
+
 		const batch = [
 			tx.lists[model.id]
 				.delete()
@@ -77,6 +91,10 @@ export const useLists = () => {
 	};
 
 	const addTask = async (model: TaskModel) => {
+
+		if (!user) {
+			return Promise.reject('A user is required.');
+		}
 
 		const data = model.getData();
 		const today = dayjs().utc();
@@ -97,6 +115,10 @@ export const useLists = () => {
 
 	const updateTask = async (model: TaskModel) => {
 
+		if (!user) {
+			return Promise.reject('A user is required.');
+		}
+
 		const data = model.getData();
 		const today = dayjs().utc();
 
@@ -112,6 +134,10 @@ export const useLists = () => {
 	};
 
 	const deleteTask = async (model: TaskModel) => {
+
+		if (!user) {
+			return Promise.reject('A user is required.');
+		}
 
 		const batch = [
 			tx.tasks[model.id]

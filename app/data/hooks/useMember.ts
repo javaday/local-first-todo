@@ -13,7 +13,7 @@ dayjs.extend(utc);
 export const useMember = () => {
 
 	const { db } = useContext(InstantContext);
-	const { user } = db.useAuth();
+	const { isLoading, user } = db.useAuth();
 	const [member, setMember] = useState<MemberModel | null>(null);
 	const navigate = useNavigate();
 
@@ -27,14 +27,15 @@ export const useMember = () => {
 			user: {},
 			lists: {
 				tasks: {},
-				invitations: {}
+				invitations: {},
+				members: {}
 			}
 		}
 	};
 
 	// Use a deferred query; isLoading will be 'true' until the query runs.
 	// The query will run when user is not null.
-	const { data, isLoading, error } = db.useQuery(user ? userQuery : null);
+	const { data, error } = db.useQuery(user ? userQuery : null);
 
 	useEffect(() => {
 		if (user && data?.members && data.members.length) {
