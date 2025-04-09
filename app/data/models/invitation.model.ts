@@ -1,4 +1,5 @@
 import { AuditModel } from "./audit.model";
+import { InvitationType } from "./enums";
 
 export interface InvitationSendResult {
 	invitation: InvitationModel | null;
@@ -15,6 +16,7 @@ export interface InviteAcceptResult {
 
 export class InvitationModel extends AuditModel {
 
+	type: string = InvitationType.App;
 	listId: string = '';
 	email: string = '';
 	sentBy: string = '';
@@ -25,6 +27,7 @@ export class InvitationModel extends AuditModel {
 	getData() {
 		const auditData = super.getData();
 		return {
+			type: this.type,
 			listId: this.listId,
 			email: this.email,
 			sentBy: this.sentBy,
@@ -37,6 +40,7 @@ export class InvitationModel extends AuditModel {
 
 	constructor(data: any = {}) {
 		super(data);
+		this.type = data.type || InvitationType.App;
 		this.listId = data.listId || '';
 		this.email = data.email || '';
 		this.sentBy = data.sentBy || '';

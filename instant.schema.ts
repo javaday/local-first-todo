@@ -35,7 +35,8 @@ const _schema = i.schema({
 			...auditFields
 		}),
 		invitations: i.entity({
-			listId: i.string().indexed(),
+			type: i.string().indexed(),
+			listId: i.string().optional().indexed(),
 			email: i.string().indexed(),
 			sentBy: i.string().indexed(),
 			sentAt: i.number(),

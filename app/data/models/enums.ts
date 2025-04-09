@@ -4,5 +4,6 @@ export enum Role {
 }
 
 export enum InvitationType {
-	Group = 'GROUP',
+	App = 'APP',
+	List = 'LIST',
 }
