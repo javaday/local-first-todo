@@ -1,4 +1,5 @@
 import { AuditModel } from "./audit.model";
+import { Role } from "./enums";
 import { ListModel } from "./list.model";
 
 import dayjs from 'dayjs';
@@ -44,8 +45,7 @@ export class MemberModel extends AuditModel {
 
 	constructor(data: any = {}) {
 		super(data);
-		this.id = data.id || '';
-		this.role = data.role || '';
+		this.role = data.role || Role.None;
 		this.email = data.email || '';
 		this.name = data.name || '';
 		this.firstName = data.firstName || '';

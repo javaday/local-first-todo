@@ -19,6 +19,7 @@ export function MagicCode() {
 	const [verifiedEmail, setVerifiedEmail] = useState('');
 
 	useEffect(() => {
+		console.log('member: ', member);
 		if (member) {
 			navigate('/lists');
 		}

@@ -1,4 +1,4 @@
-import { id, tx } from "@instantdb/admin";
+import { tx } from "@instantdb/admin";
 import { MemberModel } from "~/data/models/member.model";
 import { db } from './instant.server';
 
@@ -50,55 +50,37 @@ const getMemberByEmail = async (email: string): Promise<MemberModel | null> => {
 	}
 }
 
-const registerMember = async (adminId: string, organizationId: string, email: string) => {
+const registerMember = async (email: string, name: string, sentBy: string) => {
 
 	const today = dayjs().utc();
 
-	const member = await getMemberByEmail(email);
+	// Create user if necessary
+	const token = await db.auth.createToken(email);
+	const user = await db.auth.getUser({ refresh_token: token });
 
-	if (member) {
-		// Make sure the member is linked to the organization
-		const memberData = member.getData();
-		const batch = [
-			tx.members[memberData.id]
-				.link({
-					organization: organizationId
-				})
-		];
+	// Create member record
+	const newMember = new MemberModel({
+		id: user.id,
+		email,
+		createdAt: today.unix(),
+		createdBy: sentBy
+	});
 
-		await db.transact(batch);
+	newMember.splitName(name);
 
-		return member;
-	}
-	else {
-		// Create user if necessary
-		const token = await db.auth.createToken(email);
-		const user = await db.auth.getUser({ refresh_token: token });
+	const memberData = newMember.getData();
 
-		// Create member record
-		const memberData = {
-			id: id(),
-			userId: user.id,
-			organizationId: organizationId,
-			email: email,
-			isDeleted: false,
-			createdAt: today.unix(),
-			createdBy: adminId
-		};
+	const batch = [
+		tx.members[memberData.id]
+			.update(memberData)
+			.link({
+				user: user.id,
+			})
+	];
 
-		const batch = [
-			tx.members[memberData.id]
-				.update(memberData)
-				.link({
-					user: user.id,
-					organization: organizationId
-				})
-		];
+	await db.transact(batch);
 
-		await db.transact(batch);
-
-		return getMemberByEmail(email);
-	}
+	return getMemberByEmail(email);
 }
 
 export {

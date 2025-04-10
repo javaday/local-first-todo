@@ -38,6 +38,8 @@ export const useMember = () => {
 	const { data, error } = db.useQuery(user ? userQuery : null);
 
 	useEffect(() => {
+		console.log('user: ', user);
+		console.log('data: ', data);
 		if (user && data?.members && data.members.length) {
 
 			const member = new MemberModel(data.members[0]);
