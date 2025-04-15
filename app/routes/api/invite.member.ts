@@ -1,7 +1,5 @@
 import { type ActionFunctionArgs } from "react-router";
 import { InvitationModel } from "~/data/models/invitation.model";
-import { db } from "~/services/data/instant.server";
-import { addInvitation } from "~/services/data/invitations.service";
 import { EmailService } from "~/services/email/EmailService";
 import { TemplateName } from "~/services/email/templates";
 import { toError } from "~/utils/error.utils";
@@ -10,12 +8,13 @@ import { toShort } from "~/utils/uuid.utils";
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import { InvitationType, Role } from "~/data/models/enums";
-import { getMemberByToken } from "~/services/data/members.service";
+import { DataService } from "~/services/data/DataService";
 
 dayjs.extend(utc);
 
 export async function action({ request }: ActionFunctionArgs) {
 
+	const dataService = DataService.getInstance();
 	const emailService = EmailService.getInstance();
 	const fromEmail = process.env.EMAIL_FROM_ADDRESS || "";
 	const expireDays = parseInt(process.env.APP_INVITATION_EXPIRE_DAYS || "7");
@@ -29,13 +28,13 @@ export async function action({ request }: ActionFunctionArgs) {
 			throw new Error('Required parameters are missing.');
 		}
 
-		const admin = await getMemberByToken(token);
+		const admin = await dataService.getMemberByToken(token);
 
 		if (!admin || admin.role !== Role.SystemAdmin) {
 			throw new Error('Unauthorized');
 		}
 
-		const user = await db.auth.getUser({ email });
+		const user = await dataService.getUser({ email });
 
 		if (user) {
 			throw new Error(`The email is already registered.`);
@@ -68,7 +67,7 @@ export async function action({ request }: ActionFunctionArgs) {
 				invitation.sentBy = admin.id;
 				invitation.expiresAt = today.add(expireDays, 'day').unix();
 
-				await addInvitation(invitation);
+				await dataService.addInvitation(invitation);
 
 				return new Response(JSON.stringify({ sent: true, error: '' }), {
 					headers: { 'Content-Type': 'application/json' },

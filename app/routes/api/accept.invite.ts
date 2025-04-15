@@ -3,8 +3,7 @@ import utc from 'dayjs/plugin/utc';
 import { ActionFunctionArgs } from "react-router";
 import { InvitationType } from "~/data/models/enums";
 import { InvitationModel, InviteAcceptResult } from "~/data/models/invitation.model";
-import { getInvitation, updateInvitation } from "~/services/data/invitations.service";
-import { registerMember } from '~/services/data/members.service';
+import { DataService } from '~/services/data/DataService';
 import { toError } from "~/utils/error.utils";
 import { toUUID } from "~/utils/uuid.utils";
 
@@ -12,6 +11,7 @@ dayjs.extend(utc);
 
 export async function action({ request }: ActionFunctionArgs) {
 
+	const dataService = DataService.getInstance();
 	const result: InviteAcceptResult = {
 		token: '',
 		registered: false,
@@ -41,7 +41,7 @@ export async function action({ request }: ActionFunctionArgs) {
 		result.token = token;
 
 		const id = toUUID(token);
-		const invitation = await getInvitation(id);
+		const invitation = await dataService.getInvitation(id);
 
 		if (invitation) {
 
@@ -60,14 +60,14 @@ export async function action({ request }: ActionFunctionArgs) {
 				throw new Error('This invitation is expired.');
 			}
 
-			const newMember = await registerMember(email, name, invitation.sentBy);
+			const newMember = await dataService.registerMember(email, name, invitation.sentBy);
 
 			if (invitation.type === InvitationType.List) {
 				// Link to list
 			}
 
 			// update the invitation
-			await updateInvitation(new InvitationModel({
+			await dataService.updateInvitation(new InvitationModel({
 				...invitation,
 				acceptedAt: dayjs().utc().unix()
 			}));

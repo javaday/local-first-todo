@@ -1,6 +1,6 @@
 import { Center, Stack, Text } from "@mantine/core";
 import { AcceptInvite } from "~/components/AcceptInvite";
-import { getInvitation } from "~/services/data/invitations.service";
+import { DataService } from "~/services/data/DataService";
 import { toUUID } from "~/utils/uuid.utils";
 import { Route } from "./+types/accept";
 
@@ -11,9 +11,10 @@ interface TokenVerification {
 
 export async function loader({ params }: Route.LoaderArgs): Promise<TokenVerification> {
 
+	const dataService = DataService.getInstance();
 	const shortId = params.shortId || '';
 	const id = toUUID(shortId);
-	const invitation = await getInvitation(id);
+	const invitation = await dataService.getInvitation(id);
 
 	if (invitation) {
 		return {

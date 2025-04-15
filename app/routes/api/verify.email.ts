@@ -1,15 +1,17 @@
 import { type ActionFunctionArgs } from "react-router";
-import { db } from "~/services/data/instant.server";
+import { DataService } from "~/services/data/DataService";
 
 
 export async function action({ request }: ActionFunctionArgs) {
+
+	const dataService = DataService.getInstance();
 
 	try {
 		const formData = await request.formData();
 		const email = formData.get('email')?.valueOf().toString() || '';
 
 		if (email) {
-			const user = await db.auth.getUser({ email });
+			const user = await dataService.getUser({ email });
 
 			if (user) {
 				return new Response(JSON.stringify({ verified: true }), {
