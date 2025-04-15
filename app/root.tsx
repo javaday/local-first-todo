@@ -7,8 +7,8 @@ import type { Route } from "./+types/root";
 import faviconAssetUrl from './assets/logo.svg';
 
 import '@mantine/core/styles.css';
-import '@mantine/core/styles.layer.css';
 import '@mantine/notifications/styles.css';
+import 'mantine-datatable/styles.css';
 import "./app.css";
 
 export const links: Route.LinksFunction = () => [
