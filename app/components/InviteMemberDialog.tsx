@@ -72,7 +72,15 @@ export const InviteMemberDialog = (props: InviteMemberDialogProps) => {
 		const result = form.validate();
 
 		if (!result.hasErrors) {
-			sendInvite(form.values.email);
+			const formData = new FormData();
+
+			formData.append('token', member.token);
+			formData.append('email', form.values.email);
+
+			inviteFetcher.submit(formData, {
+				action: '/api/invite/member',
+				method: 'POST'
+			});
 		}
 	};
 

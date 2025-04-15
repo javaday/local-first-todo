@@ -1,6 +1,6 @@
 import { Avatar, Menu, rem, useMantineColorScheme } from "@mantine/core";
 import { IconColorFilter, IconDoorExit, IconUserPlus } from "@tabler/icons-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Role } from "~/data/models/enums";
 import { MemberModel } from "~/data/models/member.model";
 import { useOnlineStatus } from "~/hooks/useOnlineStatus";
@@ -16,21 +16,6 @@ export function UserMenu(props: UserMenuProps) {
 	const [initials, setInitials] = useState('');
 	const [inviteDialogProps, setInviteDialogProps] = useState<InviteMemberDialogProps>(defaultInviteMemberDialogProps);
 	const online = useOnlineStatus();
-
-	useEffect(() => {
-		if (member) {
-
-			const name = `${member.firstName} ${member.lastName}`.trim() || member.name || '';
-
-			if (name.length) {
-				const names = name.split(' ')
-				const firstInit = names[0].charAt(0).toUpperCase();
-				const lastInit = names.length > 1 ? names.reverse()[0].charAt(0).toUpperCase() : '';
-
-				setInitials(`${firstInit}${lastInit}`);
-			}
-		}
-	}, [member]);
 
 	const { toggleColorScheme } = useMantineColorScheme();
 
@@ -53,7 +38,7 @@ export function UserMenu(props: UserMenuProps) {
 				< Menu withArrow width={200}>
 					<Menu.Target>
 						<Avatar src={member.avatarUrl} alt={member.email} color="red">
-							{initials}
+							{member.initials}
 						</Avatar>
 					</Menu.Target>
 					<Menu.Dropdown>

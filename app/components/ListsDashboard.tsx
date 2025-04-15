@@ -9,12 +9,14 @@ import { TaskModel } from "~/data/models/task.model";
 import { showErrorNotification, showSuccessNotification } from "~/utils/notification.utils";
 import { defaultEditListDialogProps, EditListDialog, EditListDialogProps } from "./EditListDialog";
 import { ListCard } from "./ListCard";
+import { defaultListMembersDialogProps, ListMembersDialog, ListMembersDialogProps } from "./ListMembersDialog";
 
 export function ListsDashboard() {
 
 	const { member } = useOutletContext<{ member: MemberModel }>();
 	const [lists, setLists] = useState<ListModel[]>([]);
 	const [editDialogProps, setEditDialogProps] = useState<EditListDialogProps>(defaultEditListDialogProps);
+	const [listMembersDialogProps, setListMembersDialogProps] = useState<ListMembersDialogProps>(defaultListMembersDialogProps);
 	const [overlay, setOverlay] = useState(false);
 	const { addList, addTask, updateTask, deleteTask } = useLists();
 
@@ -39,6 +41,16 @@ export function ListsDashboard() {
 			onSaveTask: saveTask,
 			onCancel: () => {
 				setEditDialogProps(defaultEditListDialogProps);
+			}
+		});
+	}
+
+	function editListMembers(list: ListModel) {
+		setListMembersDialogProps({
+			opened: true,
+			list: list,
+			onClose: () => {
+				setListMembersDialogProps(defaultListMembersDialogProps);
 			}
 		});
 	}
@@ -94,12 +106,13 @@ export function ListsDashboard() {
 	return (
 		<>
 			<EditListDialog {...editDialogProps} />
+			<ListMembersDialog {...listMembersDialogProps} />
 			<Box pos="relative">
 				<LoadingOverlay visible={overlay} zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
 				<Group>
 					{lists.length === 0 && <p>No lists yet.</p>}
 					{lists.map((list) => (
-						<ListCard key={list.id} list={list} onClick={() => { editList(list); }} />
+						<ListCard key={list.id} list={list} onClick={() => { editList(list); }} onMembersClick={editListMembers} />
 					))}
 				</Group>
 				<Affix position={{ bottom: 40, right: 40 }}>
