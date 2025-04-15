@@ -1,4 +1,4 @@
-import { ListsDashboard } from "~/components/ListsDashboard";
+import { Lists } from "~/components/Lists/Root";
 
 export function HydrateFallback() {
 	return <div>Loading...</div>;
@@ -8,7 +8,9 @@ export default function ListsRoute() {
 
 	return (
 		<>
-			<ListsDashboard />
+			<Lists.Root>
+				<Lists.Dashboard />
+			</Lists.Root>
 		</>
 	);
 }

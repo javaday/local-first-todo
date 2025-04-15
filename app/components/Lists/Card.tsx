@@ -3,16 +3,16 @@ import { useHover } from "@mantine/hooks";
 import { IconPencil } from "@tabler/icons-react";
 import { ListModel } from "~/data/models/list.model";
 import { MemberModel } from "~/data/models/member.model";
+import { useListsContext } from "./Context";
 
-interface ListCardProps {
+interface CardProps {
 	list: ListModel,
-	onClick: () => void;
-	onMembersClick: (list: ListModel) => void;
 };
 
-export function ListCard(props: ListCardProps) {
+export function Card(props: CardProps) {
 
-	const { list, onClick, onMembersClick } = props;
+	const { list } = props;
+	const { member, editList, editListMembers } = useListsContext();
 	const { hovered: nameHovered, ref: nameRef } = useHover();
 	const { hovered: membersHovered, ref: membersRef } = useHover();
 
@@ -75,7 +75,7 @@ export function ListCard(props: ListCardProps) {
 			<Group ref={nameRef} justify="space-between">
 				<Title order={4}>{list.name}</Title>
 				{nameHovered &&
-					<ActionIcon variant="transparent" size="sm" onClick={onClick}>
+					<ActionIcon variant="transparent" size="sm" onClick={() => editList(list)}>
 						<IconPencil />
 					</ActionIcon>
 				}
@@ -88,7 +88,7 @@ export function ListCard(props: ListCardProps) {
 			<Group ref={membersRef} justify="space-between">
 				{avatars()}
 				{membersHovered &&
-					<ActionIcon variant="transparent" size="sm" onClick={() => onMembersClick(list)}>
+					<ActionIcon variant="transparent" size="sm" onClick={() => editListMembers(list)}>
 						<IconPencil />
 					</ActionIcon>
 				}

@@ -3,15 +3,15 @@ import { useForm } from "@mantine/form";
 import { IconCheck, IconLabel, IconUsers, IconX } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { ListModel } from "~/data/models/list.model";
-
-import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
 import { TaskModel } from "~/data/models/task.model";
 import { TaskEditor } from "./TaskEditor";
 
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+
 dayjs.extend(utc);
 
-export const defaultEditListDialogProps: EditListDialogProps = {
+export const defaultTasksEditorProps: TasksEditorProps = {
 	opened: false,
 	list: new ListModel(),
 	onSave: () => { },
@@ -19,7 +19,7 @@ export const defaultEditListDialogProps: EditListDialogProps = {
 	onCancel: () => { }
 };
 
-export interface EditListDialogProps {
+export interface TasksEditorProps {
 	opened: boolean;
 	list: ListModel;
 	onSave: (model: ListModel) => void;
@@ -27,7 +27,7 @@ export interface EditListDialogProps {
 	onCancel: () => void;
 }
 
-export function EditListDialog(props: EditListDialogProps) {
+export function TasksEditor(props: TasksEditorProps) {
 
 	const { opened, list, onSave, onSaveTask, onCancel } = props;
 	const [tasks, setTasks] = useState<TaskModel[]>(list.tasks);
