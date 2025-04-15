@@ -18,6 +18,7 @@ export class MemberModel extends AuditModel {
 
 	// not db fields
 	token: string = '';
+	initials: string = '';
 	lists: ListModel[] = [];
 
 	splitName = (name: string) => {
@@ -53,5 +54,15 @@ export class MemberModel extends AuditModel {
 		this.avatarUrl = data.avatarUrl || '';
 
 		this.lists = (data.lists || []).map((l: any) => new ListModel(l));
+
+		const name = `${this.firstName} ${this.lastName}`.trim() || this.name || '';
+
+		if (name.length) {
+			const names = name.split(' ')
+			const firstInit = names[0].charAt(0).toUpperCase();
+			const lastInit = names.length > 1 ? names.reverse()[0].charAt(0).toUpperCase() : '';
+
+			this.initials = `${firstInit}${lastInit}`;
+		}
 	}
 }

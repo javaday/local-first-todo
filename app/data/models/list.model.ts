@@ -1,4 +1,5 @@
 import { AuditModel } from "./audit.model";
+import { InvitationModel } from "./invitation.model";
 import { MemberModel } from "./member.model";
 import { TaskModel } from "./task.model";
 
@@ -10,6 +11,7 @@ export class ListModel extends AuditModel {
 	description: string = '';
 
 	members: MemberModel[] = [];
+	invitations: InvitationModel[] = [];
 	tasks: TaskModel[] = [];
 
 	getData() {
@@ -29,6 +31,7 @@ export class ListModel extends AuditModel {
 		this.description = data.description || '';
 
 		this.members = (data.members || []).map((m: any) => new MemberModel(m));
+		this.invitations = (data.invitations || []).map((i: any) => new InvitationModel(i));
 		this.tasks = (data.tasks || []).map((t: any) => new TaskModel(t));
 	}
 }
