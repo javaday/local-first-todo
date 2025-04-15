@@ -10,6 +10,7 @@ export default [
 	...prefix("api", [
 		route("verify/email", "routes/api/verify.email.ts"),
 		route("invite/member", "routes/api/invite.member.ts"),
+		route("invite/list/member", "routes/api/invite.list.member.ts"),
 		route("accept/invite", "routes/api/accept.invite.ts"),
 	]),
 ] satisfies RouteConfig;
