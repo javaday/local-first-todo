@@ -180,9 +180,9 @@ export class DataService implements IDataService {
 
 			if (data.listId) {
 				batch.push(
-					tx.lists[data.listId]
+					tx.invitations[data.id]
 						.link({
-							invitations: data.id
+							list: data.listId
 						})
 				);
 			}

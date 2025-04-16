@@ -49,6 +49,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
 		const invitation = new InvitationModel({
 			type: InvitationType.List,
+			listId: list.id,
 			email
 		});
 
@@ -77,7 +78,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
 			await dataService.addInvitation(invitation);
 
-			return new Response(JSON.stringify({ sent: true, error: '' }), {
+			return new Response(JSON.stringify({ email, sent: true, error: '' }), {
 				headers: { 'Content-Type': 'application/json' },
 			});
 		}
@@ -86,6 +87,7 @@ export async function action({ request }: ActionFunctionArgs) {
 	catch (err) {
 
 		const error = toError(err);
+		console.error(error);
 
 		return new Response(JSON.stringify({ sent: false, error: error.message }), {
 			headers: { 'Content-Type': 'application/json' },
