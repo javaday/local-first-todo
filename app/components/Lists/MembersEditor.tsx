@@ -1,4 +1,4 @@
-import { ActionIcon, Button, Group, Stack, TextInput, Tooltip } from "@mantine/core";
+import { ActionIcon, Button, Group, Stack, Text, TextInput, Tooltip } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { IconCheck, IconPlus, IconTrash } from "@tabler/icons-react";
 import { DataTable } from 'mantine-datatable';
@@ -38,6 +38,8 @@ export function MembersEditor(props: MembersEditorProps) {
 	const isOnline = useOnlineStatus();
 	const views = ['All', 'Accepted', 'Pending', 'Expired'];
 
+	const emailRegex = /^[\w-./+]+@([\w-/+]+\.)+[\w-]{2,4}$/gi;
+
 	const form = useForm({
 		initialValues: {
 			email: '',
@@ -48,7 +50,15 @@ export function MembersEditor(props: MembersEditorProps) {
 		},
 
 		validate: {
-			email: (value) => { if (!value) return 'Email is required.'; },
+			email: (value) => {
+				if (!value) {
+					return 'An email address is required';
+				}
+				else if (emailRegex.test(value) === false) {
+					return 'A valid email address is required';
+				}
+				return null;
+			},
 		},
 	});
 
@@ -60,36 +70,33 @@ export function MembersEditor(props: MembersEditorProps) {
 			'Expired': []
 		};
 
-		list.members
-			.forEach((member) => {
+		const owner = list.members.find(m => m.id === list.memberId);
 
-				if (member.id === list.memberId) {
+		if (owner) {
+			const invitedMember: InvitedMember = {
+				member: owner,
+				invitation: new InvitationModel(),
+				status: 'Owner'
+			}
 
-					const status = 'Owner';
+			segments['Owner'].push(invitedMember);
+		}
 
-					const invitedMember: InvitedMember = {
-						member: member,
-						invitation: new InvitationModel(),
-						status
-					}
+		list.invitations
+			.forEach((invitation) => {
 
-					segments[status].push(invitedMember);
+				const status = getInvitationStatus(invitation);
+				const member = list.members.find(m => m.email === invitation.email);
+
+				const invitedMember: InvitedMember = {
+					member: member || new MemberModel({
+						email: invitation.email
+					}),
+					invitation: invitation,
+					status: status
 				}
-				else {
-					const invitation = list.invitations.find(i => i.email === member.email);
 
-					if (invitation) {
-						const status = getInvitationStatus(invitation);
-
-						const invitedMember: InvitedMember = {
-							member: member,
-							invitation: invitation,
-							status: status
-						}
-
-						segments[status].push(invitedMember);
-					}
-				}
+				segments[status].push(invitedMember);
 			});
 
 		setMemberSegments(segments);
@@ -154,17 +161,21 @@ export function MembersEditor(props: MembersEditorProps) {
 	return (
 		<Stack gap={10}>
 			{isOnline &&
-				<Group gap={5} p={0}>
-					<IconPlus size={16} />
-					<TextInput
-						variant="unstyled"
-						key={form.key('email')}
-						placeholder="Email"
-						value={form.values.email}
-						onChange={(event) => form.setFieldValue('email', event.currentTarget.value)}
-						onKeyUp={handleKeyUp}
-					/>
-				</Group>
+				<Stack gap={0}>
+					<Group gap={5} p={0} wrap="nowrap">
+						<IconPlus size={16} />
+						<TextInput
+							variant="unstyled"
+							key={form.key('email')}
+							placeholder="Email"
+							value={form.values.email}
+							onChange={(event) => form.setFieldValue('email', event.currentTarget.value)}
+							onKeyUp={handleKeyUp}
+							w={'100%'}
+						/>
+					</Group>
+					{form.errors.email && <Text size="sm" c="red">{form.errors.email}</Text>}
+				</Stack>
 			}
 			<DataTable
 				idAccessor="member.id"
@@ -209,16 +220,18 @@ export function MembersEditor(props: MembersEditorProps) {
 							}
 							else {
 								return (
-									<Tooltip label='Remove Member' withArrow>
-										<ActionIcon
-											size="sm"
-											variant="subtle"
-											color="red"
-											onClick={() => confirmDelete(record)}
-										>
-											<IconTrash size={16} />
-										</ActionIcon>
-									</Tooltip>
+									<Group justify="center">
+										<Tooltip label='Remove Member' withArrow>
+											<ActionIcon
+												size="sm"
+												variant="subtle"
+												color="red"
+												onClick={() => confirmDelete(record)}
+											>
+												<IconTrash size={16} />
+											</ActionIcon>
+										</Tooltip>
+									</Group>
 								);
 							}
 						},

@@ -1,6 +1,6 @@
 import { ActionIcon, Avatar, Divider, Group, Paper, Progress, Text, Title, Tooltip } from "@mantine/core";
 import { useHover } from "@mantine/hooks";
-import { IconPencil } from "@tabler/icons-react";
+import { IconPencil, IconTrash } from "@tabler/icons-react";
 import { ListModel } from "~/data/models/list.model";
 import { MemberModel } from "~/data/models/member.model";
 import { useListsContext } from "./Context";
@@ -12,7 +12,7 @@ interface CardProps {
 export function Card(props: CardProps) {
 
 	const { list } = props;
-	const { member, editList, editListMembers } = useListsContext();
+	const { member, editList, editListMembers, confirmDeleteList } = useListsContext();
 	const { hovered: nameHovered, ref: nameRef } = useHover();
 	const { hovered: membersHovered, ref: membersRef } = useHover();
 
@@ -75,9 +75,15 @@ export function Card(props: CardProps) {
 			<Group ref={nameRef} justify="space-between">
 				<Title order={4}>{list.name}</Title>
 				{nameHovered &&
-					<ActionIcon variant="transparent" size="sm" onClick={() => editList(list)}>
-						<IconPencil />
-					</ActionIcon>
+					<Group gap={0}>
+						<ActionIcon variant="transparent" size="sm" onClick={() => editList(list)}>
+							<IconPencil />
+						</ActionIcon>
+						<ActionIcon variant="transparent" size="sm" color="red" onClick={() => confirmDeleteList(list)}>
+							<IconTrash />
+						</ActionIcon>
+					</Group>
+
 				}
 			</Group>
 			<Text size="xs" c="dimmed" truncate="end">
@@ -88,9 +94,11 @@ export function Card(props: CardProps) {
 			<Group ref={membersRef} justify="space-between">
 				{avatars()}
 				{membersHovered &&
-					<ActionIcon variant="transparent" size="sm" onClick={() => editListMembers(list)}>
-						<IconPencil />
-					</ActionIcon>
+					<Group gap={0}>
+						<ActionIcon variant="transparent" size="sm" onClick={() => editListMembers(list)}>
+							<IconPencil />
+						</ActionIcon>
+					</Group>
 				}
 			</Group>
 			<Divider my={10} />

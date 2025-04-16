@@ -3,7 +3,6 @@ import { Box, LoadingOverlay } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import { useFetcher, useOutletContext } from 'react-router';
 import { useLists } from '~/data/hooks/useLists';
-import { InvitationSendResult } from '~/data/models/invitation.model';
 import { ListModel } from '~/data/models/list.model';
 import { MemberModel } from '~/data/models/member.model';
 import { TaskModel } from '~/data/models/task.model';
@@ -31,7 +30,7 @@ function Root({ children }: ListsRootProps) {
 	const [overlay, setOverlay] = useState(false);
 	const { addList, addTask, updateTask, deleteList, deleteTask } = useLists();
 
-	const inviteFetcher = useFetcher<InvitationSendResult>();
+	const inviteFetcher = useFetcher<{ email: string, sent: boolean, error: string }>();
 
 	useEffect(() => {
 		if (member) {
@@ -41,6 +40,20 @@ function Root({ children }: ListsRootProps) {
 			setLists([]);
 		}
 	}, [member]);
+
+	useEffect(() => {
+		if (inviteFetcher.state === 'idle' && inviteFetcher.data) {
+
+			setOverlay(false);
+
+			if (inviteFetcher.data.sent) {
+				showSuccessNotification('Invite List Member', `'${inviteFetcher.data.email}' has been invited.`);
+			}
+			else {
+				showErrorNotification('Invite List Member Error', inviteFetcher.data.error);
+			}
+		}
+	}, [inviteFetcher]);
 
 	function addNewList() {
 		editList(new ListModel());
@@ -124,7 +137,8 @@ function Root({ children }: ListsRootProps) {
 	function confirmDeleteList(model: ListModel) {
 		setConfirmDialogProps({
 			opened: true,
-			prompt: `Are you sure you want to remove '${model.name}'?`,
+			title: 'Delete List',
+			prompt: `Are you sure you want to delete '${model.name}'?`,
 			onYes: () => {
 				setConfirmDialogProps(defaultConfirmDialogProps);
 				deleteList(model)
@@ -141,16 +155,19 @@ function Root({ children }: ListsRootProps) {
 
 	function inviteListMember(list: ListModel, email: string) {
 
-		const formData = new FormData();
+		setOverlay(true);
+		setTimeout(() => {
+			const formData = new FormData();
 
-		formData.append('token', member.token);
-		formData.append('listId', list.id);
-		formData.append('email', email);
+			formData.append('token', member.token);
+			formData.append('listId', list.id);
+			formData.append('email', email);
 
-		inviteFetcher.submit(formData, {
-			action: '/api/invite/list/member',
-			method: 'POST'
-		});
+			inviteFetcher.submit(formData, {
+				action: '/api/invite/list/member',
+				method: 'POST'
+			});
+		}, 250);
 	}
 
 	function closeDialog() {
@@ -174,7 +191,7 @@ function Root({ children }: ListsRootProps) {
 		<ListsContext.Provider value={value}>
 			<ConfirmDialog {...confirmDialogProps} />
 			<ListDialog {...dialogProps} />
-			<Box pos="relative">
+			<Box pos="relative" mih={'calc(100vh - 96px)'} mb={60}>
 				<LoadingOverlay visible={overlay} zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
 				{children}
 			</Box>
