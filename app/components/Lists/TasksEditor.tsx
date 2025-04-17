@@ -1,159 +1,95 @@
-import { Button, Group, Modal, Stack, Tabs, TextInput, Tooltip } from "@mantine/core";
-import { useForm } from "@mantine/form";
-import { IconCheck, IconLabel, IconUsers, IconX } from "@tabler/icons-react";
+import { Divider, Group, ScrollArea, SegmentedControl, Stack, Text } from "@mantine/core";
 import { useEffect, useState } from "react";
+import { useTasks } from "~/data/hooks/useTasks";
 import { ListModel } from "~/data/models/list.model";
 import { TaskModel } from "~/data/models/task.model";
+import { useListsContext } from "./Context";
 import { TaskEditor } from "./TaskEditor";
 
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 
+
 dayjs.extend(utc);
 
 export const defaultTasksEditorProps: TasksEditorProps = {
-	opened: false,
 	list: new ListModel(),
-	onSave: () => { },
-	onSaveTask: () => { },
-	onCancel: () => { }
 };
 
 export interface TasksEditorProps {
-	opened: boolean;
 	list: ListModel;
-	onSave: (model: ListModel) => void;
-	onSaveTask: (model: TaskModel) => void;
-	onCancel: () => void;
 }
 
 export function TasksEditor(props: TasksEditorProps) {
 
-	const { opened, list, onSave, onSaveTask, onCancel } = props;
-	const [tasks, setTasks] = useState<TaskModel[]>(list.tasks);
-	const isNew = !list.createdAt;
+	const { list } = props;
+	const { saveTask } = useListsContext();
+	const [listTasks, setListTasks] = useState<TaskModel[]>([]);
+	const [filter, setFilter] = useState('all');
+	const [taskCount, setTaskCount] = useState(0);
+	const [checkedCount, setCheckedCount] = useState(0);
 
-	const form = useForm({
-		initialValues: {
-			name: '',
-			description: '',
-		},
-
-		initialErrors: {
-			name: ''
-		},
-
-		validate: {
-			name: (value) => { if (!value) return 'Name is required.'; },
-		},
-	});
+	const { tasks } = useTasks(list.id);
 
 	useEffect(() => {
-		if (opened && list) {
-			form.setFieldValue('name', list.name);
-			form.setFieldValue('description', list.description);
-			form.clearErrors();
-			setTasks(list.tasks);
+		if (tasks) {
+			const filtered = tasks.filter((task) => {
+				if (filter === 'active') {
+					return !task.isChecked;
+				}
+				if (filter === 'checked') {
+					return task.isChecked;
+				}
+				return true;
+			});
+			setListTasks(filtered);
+
+			const checked = tasks.filter((task) => task.isChecked).length;
+			setCheckedCount(checked);
+			setTaskCount(tasks.length);
 		}
 		else {
-			form.setFieldValue('name', '');
-			form.setFieldValue('description', '');
+			setListTasks([]);
 		}
-	}, [opened, list]);
+	}, [tasks, filter]);
 
-	function trySave() {
-
-		const result = form.validate();
-
-		if (!result.hasErrors) {
-			list.name = form.values.name;
-			list.description = form.values.description;
-			onSave(list);
-		}
-	}
-
-	function saveTask(task: TaskModel) {
+	function onSaveTask(task: TaskModel) {
 
 		if (!task.createdAt) {
 			task.listId = list.id;
-			setTasks([...tasks, task]);
 		}
-		onSaveTask(task);
+
+		saveTask(task);
 	}
 
-	function deleteTask(task: TaskModel) {
-		setTasks([...tasks.filter(t => t.id !== task.id)]);
+	function onDeleteTask(task: TaskModel) {
 		task.isDeleted = true;
-		onSaveTask(task);
+		saveTask(task);
 	}
 
 	return (
-		<Modal
-			opened={opened}
-			onClose={onCancel}
-			title={isNew ? 'Add List' : 'Edit List'}
-			withCloseButton={true}
-			transitionProps={{ transition: 'fade', duration: 200 }}
-			size={isNew ? 'xs' : 'auto'}
-			centered>
-			<Tabs defaultValue={isNew ? 'meta' : 'tasks'} mt={10}>
-				{!isNew &&
-					<>
-						<Tabs.List>
-							<Tabs.Tab value="tasks" leftSection={<IconCheck size={12} />}>
-								Tasks
-							</Tabs.Tab>
-							<Tabs.Tab value="members" leftSection={<IconUsers size={12} />}>
-								Members
-							</Tabs.Tab>
-							<Tabs.Tab value="meta" leftSection={<IconLabel size={12} />}>
-								Name
-							</Tabs.Tab>
-						</Tabs.List>
-						<Tabs.Panel value="tasks" mt={10}>
-							<Stack gap={0}>
-								{tasks.map((task) => <TaskEditor key={task.id} task={task} onSave={saveTask} onDelete={deleteTask} />)}
-								<TaskEditor task={new TaskModel()} onSave={saveTask} onDelete={() => { }} />
-							</Stack>
-						</Tabs.Panel>
-						<Tabs.Panel value="members" mt={10}>
-							Members
-						</Tabs.Panel>
-					</>
-				}
-				<Tabs.Panel value="meta" mt={10}>
-					<Stack>
-						<TextInput
-							withAsterisk
-							label="Name"
-							key={form.key('name')}
-							value={form.values.name}
-							error={form.errors.name}
-							onChange={(event) => form.setFieldValue('name', event.currentTarget.value)}
-						/>
-						<TextInput
-							label="Description"
-							key={form.key('description')}
-							value={form.values.description}
-							onChange={(event) => form.setFieldValue('description', event.currentTarget.value)}
-						/>
-					</Stack>
-					<Group justify={'center'} mt={20}>
-						<Tooltip label={isNew ? 'Add Contest' : 'Save Changes'} openDelay={1000} withArrow>
-							<Button leftSection={<IconCheck size={18} />} aria-label={isNew ? 'Add Contest' : 'Save Changes'} onClick={trySave}>
-								{isNew ? 'Add' : 'Save'}
-							</Button>
-						</Tooltip>
-						{isNew &&
-							<Tooltip label="Cancel" openDelay={1000} withArrow>
-								<Button leftSection={<IconX size={18} />} color="red" aria-label="Cancel" onClick={onCancel}>
-									Cancel
-								</Button>
-							</Tooltip>
-						}
-					</Group>
-				</Tabs.Panel>
-			</Tabs>
-		</Modal>
+		<Stack gap={10}>
+			<Group justify="space-between">
+				<Text size="sm">{taskCount - checkedCount} tasks remaining</Text>
+				<SegmentedControl
+					value={filter}
+					onChange={setFilter}
+					size="xs"
+					data={[
+						{ label: 'All', value: 'all' },
+						{ label: 'Active', value: 'active' },
+						{ label: 'Checked', value: 'checked' }
+					]}
+				/>
+			</Group>
+			<Divider />
+			<ScrollArea h={200} type="always" overscrollBehavior="contain">
+				<Stack gap={0}>
+					{listTasks.map((task) => <TaskEditor key={task.id} task={task} onSave={saveTask} onDelete={onDeleteTask} />)}
+				</Stack>
+			</ScrollArea>
+			<Divider />
+			<TaskEditor task={new TaskModel()} onSave={onSaveTask} onDelete={onDeleteTask} />
+		</Stack>
 	);
 }

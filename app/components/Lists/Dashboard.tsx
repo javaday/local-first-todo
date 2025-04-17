@@ -11,7 +11,7 @@ export function Dashboard() {
 			<Group>
 				{lists.length === 0 && <p>No lists yet.</p>}
 				{lists.map((list) => (
-					<Lists.Card key={list.id} list={list} />
+					<Lists.ListCard key={list.id} list={list} />
 				))}
 			</Group>
 			<Affix position={{ bottom: 40, right: 40 }}>

@@ -9,6 +9,7 @@ export interface ListsContextProps {
 	addNewList: () => void;
 	editList: (list: ListModel) => void;
 	editListMembers: (list: ListModel) => void;
+	editListTasks: (list: ListModel) => void;
 	saveList(list: ListModel): void;
 	saveTask(task: TaskModel): void;
 	confirmDeleteList(list: ListModel): void;
@@ -22,6 +23,7 @@ export const ListsContext = createContext<ListsContextProps>({
 	addNewList: () => { },
 	editList: () => { },
 	editListMembers: () => { },
+	editListTasks: () => { },
 	saveList: () => { },
 	saveTask: () => { },
 	confirmDeleteList: () => { },

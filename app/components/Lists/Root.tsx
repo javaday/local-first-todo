@@ -8,12 +8,13 @@ import { MemberModel } from '~/data/models/member.model';
 import { TaskModel } from '~/data/models/task.model';
 import { showErrorNotification, showSuccessNotification } from '~/utils/notification.utils';
 import { ConfirmDialog, ConfirmDialogProps, defaultConfirmDialogProps } from '../ConfirmDialog';
-import { Card } from './Card';
+import { ListCard } from './Card';
 import { ListsContext, useListsContext } from './Context';
 import { Dashboard } from './Dashboard';
 import { Editor } from './Editor';
 import { defaultDialogProps, ListDialog, ListDialogProps } from './ListDialog';
 import { MembersEditor } from './MembersEditor';
+import { TasksEditor } from './TasksEditor';
 
 
 interface ListsRootProps {
@@ -81,8 +82,8 @@ function Root({ children }: ListsRootProps) {
 		setDialogProps({
 			opened: true,
 			title: 'List Tasks',
-			size: 'lg',
-			children: <MembersEditor list={list} />,
+			size: 'md',
+			children: <TasksEditor list={list} />,
 		});
 	}
 
@@ -180,6 +181,7 @@ function Root({ children }: ListsRootProps) {
 		addNewList,
 		editList,
 		editListMembers,
+		editListTasks,
 		saveList,
 		saveTask,
 		confirmDeleteList,
@@ -202,7 +204,7 @@ function Root({ children }: ListsRootProps) {
 const Lists = {
 	Root,
 	Dashboard,
-	Card
+	ListCard
 };
 
 export {

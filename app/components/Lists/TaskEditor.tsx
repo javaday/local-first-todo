@@ -74,7 +74,7 @@ export function TaskEditor(props: TaskEditorProps) {
 				<TextInput
 					variant="unstyled"
 					key={form.key('label')}
-					placeholder="New Task"
+					placeholder="Add a new task..."
 					value={form.values.label}
 					onChange={(event) => form.setFieldValue('label', event.currentTarget.value)}
 					onKeyUp={handleKeyUp}
