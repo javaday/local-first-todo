@@ -74,33 +74,70 @@ export class InstantDataService extends AbstractDataService {
 
 		const today = dayjs().utc();
 
-		// Create user if necessary
-		const token = await this.db.auth.createToken(email);
-		const user = await this.db.auth.getUser({ refresh_token: token });
+		let member = await this.getMemberByEmail(email);
 
-		// Create member record
-		const newMember = new MemberModel({
-			id: user.id,
-			email,
-			createdAt: today.unix(),
-			createdBy: sentBy
-		});
+		if (!member) {
+			// Create user if necessary
+			const token = await this.db.auth.createToken(email);
+			const user = await this.db.auth.getUser({ refresh_token: token });
 
-		newMember.splitName(name);
+			// Create member record
+			member = new MemberModel({
+				id: user.id,
+				email,
+				createdAt: today.unix(),
+				createdBy: sentBy
+			});
+		}
 
-		const memberData = newMember.getData();
+		member.splitName(name);
+
+		const memberData = member.getData();
 
 		const batch = [
 			tx.members[memberData.id]
 				.update(memberData)
 				.link({
-					user: user.id,
+					user: member.id,
 				})
 		];
 
 		await this.db.transact(batch);
 
 		return this.getMemberByEmail(email);
+	}
+
+	async updateMember(model: MemberModel, listId?: string): Promise<MemberModel> {
+
+		try {
+			const data = model.getData();
+
+			data.updatedAt = dayjs().utc().unix();
+			data.updatedBy = 'system';
+
+			const batch = [
+				tx.members[data.id]
+					.update(data)
+			];
+
+			if (listId) {
+				batch.push(
+					tx.members[data.id]
+						.link({
+							lists: listId
+						})
+				);
+			}
+
+			await this.db.transact(batch);
+
+			model = new MemberModel(data);
+		}
+		catch (err) {
+			console.log(err)
+		}
+
+		return model;
 	}
 
 	async getNewInvitations(): Promise<InvitationModel[]> {
@@ -236,5 +273,30 @@ export class InstantDataService extends AbstractDataService {
 		catch (err) {
 			return null;
 		}
+	}
+
+	async updateList(model: ListModel): Promise<ListModel> {
+
+		try {
+			const data = model.getData();
+
+			data.updatedAt = dayjs().utc().unix();
+			data.updatedBy = 'system';
+
+			await this.db.transact([
+				tx.lists[data.id]
+					.update(data)
+					.link({
+						members: data.memberId
+					})
+			]);
+
+			model = new ListModel(data);
+		}
+		catch (err) {
+			console.log(err)
+		}
+
+		return model;
 	}
 }

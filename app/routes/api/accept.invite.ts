@@ -60,10 +60,12 @@ export async function action({ request }: ActionFunctionArgs) {
 				throw new Error('This invitation is expired.');
 			}
 
-			const newMember = await dataService.registerMember(email, name, invitation.sentBy);
+			// Create a member record if necessary
+			const member = await dataService.registerMember(email, name, invitation.sentBy);
 
-			if (invitation.type === InvitationType.List) {
+			if (member && invitation.type === InvitationType.List) {
 				// Link to list
+				await dataService.updateMember(member, invitation.listId);
 			}
 
 			// update the invitation

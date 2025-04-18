@@ -9,11 +9,13 @@ export interface IDataService {
 	getMemberByEmail(email: string): Promise<MemberModel | null>;
 	getMemberByToken(token: string): Promise<MemberModel | null>;
 	registerMember(email: string, name: string, sentBy: string): Promise<MemberModel | null>;
+	updateMember(model: MemberModel, linkId?: string): Promise<MemberModel>;
 	getInvitation(id: string): Promise<InvitationModel | null>;
 	getNewInvitations(): Promise<InvitationModel[]>;
 	addInvitation(invitation: InvitationModel): Promise<InvitationModel>;
 	updateInvitation(invitation: InvitationModel): Promise<InvitationModel>;
 	getList(id: string): Promise<ListModel | null>;
+	updateList(model: ListModel): Promise<ListModel>;
 }
 
 export abstract class AbstractDataService implements IDataService {
@@ -36,6 +38,10 @@ export abstract class AbstractDataService implements IDataService {
 		return null;
 	}
 
+	async updateMember(model: MemberModel): Promise<MemberModel> {
+		return model;
+	}
+
 	async getNewInvitations(): Promise<InvitationModel[]> {
 		return [];
 	}
@@ -54,5 +60,9 @@ export abstract class AbstractDataService implements IDataService {
 
 	async getList(id: string): Promise<ListModel | null> {
 		return null;
+	}
+
+	async updateList(model: ListModel): Promise<ListModel> {
+		return model;
 	}
 }
