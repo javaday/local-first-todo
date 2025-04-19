@@ -63,7 +63,13 @@ const _schema = i.schema({
 			reverse: { on: 'tasks', has: 'one', label: 'list', onDelete: 'cascade' },
 		},
 	},
-	rooms: {},
+	rooms: {
+		list: {
+			presence: i.entity({
+				memberId: i.string()
+			}),
+		},
+	},
 });
 
 // This helps Typescript display nicer intellisense
