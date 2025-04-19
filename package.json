@@ -1,5 +1,8 @@
 {
 	"name": "local-first-todo",
+	"description": "A local-first web application using React, React Router, and InstantDB.",
+	"license": "MIT",
+	"author": "Tom Day <javaday@gmail.com>",
 	"type": "module",
 	"scripts": {
 		"build": "react-router build && node vercel/prepare.js",
