@@ -6,6 +6,6 @@ export function HydrateFallback() {
 export default function IndexRoute() {
 
 	return (
-		<></>
+		<>Nothing to see here...</>
 	);
 }
