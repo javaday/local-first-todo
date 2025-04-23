@@ -1,6 +1,7 @@
 import { type RouteConfig, index, layout, prefix, route } from "@react-router/dev/routes";
 
 export default [
+	route("manifest", "routes/manifest.ts"),
 	route("login", "routes/login.tsx"),
 	route("accept/:shortId", "routes/accept.tsx"),
 	layout("routes/shell.tsx", [
