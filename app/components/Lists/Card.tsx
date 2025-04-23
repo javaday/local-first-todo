@@ -45,8 +45,7 @@ export function ListCard(props: ListCardProps) {
 				}
 			</Group>
 			<Text size="xs" c="dimmed" truncate="end">
-				Use it to create cards, dropdowns, modals and other components that require background
-				with shadow
+				{list.description}
 			</Text>
 			<Divider my={10} />
 			<Group ref={membersRef} justify="space-between">
