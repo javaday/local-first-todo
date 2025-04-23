@@ -1,15 +1,14 @@
 {
 	"name": "local-first-todo",
-	"description": "A local-first web application using React, React Router, and InstantDB.",
+	"description": "A local-first web application using React Router and InstantDB.",
 	"license": "MIT",
 	"author": "Tom Day <javaday@gmail.com>",
 	"type": "module",
 	"scripts": {
-		"build": "react-router build",
+		"build": "react-router build && node vercel/prepare.js",
 		"dev": "cross-env NODE_ENV=development node ./dev-server.js",
 		"typecheck": "react-router typegen && tsc",
-		"db:push": "dotenv -e .env -- npx instant-cli push-schema",
-		"test": "vitest"
+		"db:push": "dotenv -e .env -- npx instant-cli push-schema"
 	},
 	"dependencies": {
 		"@instantdb/admin": "^0.17.12",
@@ -56,7 +55,6 @@
 		"tsx": "^4.19.2",
 		"typescript": "^5.7.2",
 		"vite": "^5.4.11",
-		"vite-plugin-pwa": "^1.0.0",
 		"vite-tsconfig-paths": "^5.1.4",
 		"vitest": "^3.0.4"
 	}
