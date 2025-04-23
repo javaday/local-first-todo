@@ -1,4 +1,4 @@
-import { createTheme, MantineProvider } from '@mantine/core';
+import { MantineProvider } from '@mantine/core';
 import { ModalsProvider } from "@mantine/modals";
 import { Notifications } from '@mantine/notifications';
 import { isRouteErrorResponse, Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
@@ -11,11 +11,52 @@ import '@mantine/notifications/styles.css';
 import 'mantine-datatable/styles.css';
 import "./app.css";
 
+export const meta: Route.MetaFunction = () => {
+	return [
+		{
+			title: "Local-First ToDo"
+		},
+		{
+			name: "description",
+			content: "A local-first web application using React Router and InstantDB.",
+		},
+		{
+			name: "viewport",
+			content: "width=device-width, initial-scale=1.0",
+		},
+		{
+			name: "theme-color",
+			content: "#ffffff",
+		},
+		{
+			name: "mobile-web-app-capable",
+			content: "yes",
+		},
+		{
+			name: "apple-mobile-web-app-capable",
+			content: "yes",
+		}
+	];
+}
+
 export const links: Route.LinksFunction = () => [
 	{
 		rel: 'icon',
 		type: 'image/svg+xml',
 		href: faviconAssetUrl
+	},
+	{
+		rel: 'manifest',
+		href: 'manifest',
+		crossOrigin: 'use-credentials'
+	},
+	{
+		rel: 'apple-touch-icon',
+		href: 'apple-touch-icon-180x180.png',
+	},
+	{
+		rel: 'msapplication-TileImage',
+		href: 'pwa-192x192.png',
 	},
 	{
 		rel: "preconnect",
@@ -38,17 +79,13 @@ export const links: Route.LinksFunction = () => [
 
 export function Layout({ children }: { children: React.ReactNode }) {
 
-	const theme = createTheme({
-
-	});
-
 	return (
 		<html lang="en">
 			<head>
 				<meta charSet="utf-8" />
-				<meta name="viewport" content="width=device-width, initial-scale=1" />
 				<Meta />
 				<Links />
+				<script src="register-sw" />
 			</head>
 			<body>
 				<MantineProvider>
