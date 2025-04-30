@@ -1,7 +1,7 @@
 import { tx } from "@instantdb/react";
 import dayjs from "dayjs";
 import { useContext, useEffect, useState } from "react";
-import { InstantContext } from "../InstantContest";
+import { InstantContext } from "../InstantContext";
 import { TaskModel } from "../models/task.model";
 
 export const useTasks = (listId: string) => {

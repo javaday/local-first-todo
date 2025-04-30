@@ -2,7 +2,7 @@ import { MantineProvider } from '@mantine/core';
 import { ModalsProvider } from "@mantine/modals";
 import { Notifications } from '@mantine/notifications';
 import { isRouteErrorResponse, Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
-import { InstantContextProvider } from "~/data/InstantContest";
+import { InstantContextProvider } from "~/data/InstantContext";
 import type { Route } from "./+types/root";
 import faviconAssetUrl from './assets/logo.svg';
 

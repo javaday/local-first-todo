@@ -1,6 +1,6 @@
 import { Avatar, Tooltip } from "@mantine/core";
 import { useContext, useEffect, useState } from "react";
-import { InstantContext } from "~/data/InstantContest";
+import { InstantContext } from "~/data/InstantContext";
 import { ListModel } from "~/data/models/list.model";
 import { MemberModel } from "~/data/models/member.model";
 

@@ -1,6 +1,6 @@
 import { tx } from "@instantdb/react";
 import { useContext } from "react";
-import { InstantContext } from "~/data/InstantContest";
+import { InstantContext } from "~/data/InstantContext";
 import { ListModel } from "../models/list.model";
 import { TaskModel } from "../models/task.model";
 

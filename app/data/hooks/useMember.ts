@@ -1,7 +1,7 @@
 import { tx } from "@instantdb/react";
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { InstantContext } from "~/data/InstantContest";
+import { InstantContext } from "~/data/InstantContext";
 import { MemberModel } from "~/data/models/member.model";
 
 import dayjs from 'dayjs';
