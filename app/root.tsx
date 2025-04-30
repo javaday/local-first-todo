@@ -85,7 +85,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
 				<meta charSet="utf-8" />
 				<Meta />
 				<Links />
-				<script src="register-sw" />
 			</head>
 			<body>
 				<MantineProvider>
