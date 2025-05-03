@@ -6,6 +6,7 @@ import { TaskModel } from "../models/task.model";
 
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
+import { toError } from "~/utils/error.utils";
 
 dayjs.extend(utc);
 
@@ -16,17 +17,23 @@ export const useLists = () => {
 
 	const commitBatch = (batch: any[]): Promise<boolean> => {
 		return new Promise((resolve, reject) => {
-			if (user) {
-				db.transact(batch)
-					.then(() => {
-						resolve(true);
-					})
-					.catch((e) => {
-						reject(e);
-					});
+			try {
+				if (user) {
+					db.transact(batch)
+						.then(() => {
+							resolve(true);
+						})
+						.catch((e) => {
+							reject(e);
+						});
+				}
+				else {
+					throw new Error('A user is required.');
+				}
 			}
-			else {
-				reject('A user is required.');
+			catch (e) {
+				const error = toError(e);
+				reject(error);
 			}
 		});
 	};

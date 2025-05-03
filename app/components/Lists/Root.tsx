@@ -108,9 +108,15 @@ function Root({ children }: ListsRootProps) {
 						setOverlay(false);
 						showSuccessNotification('Update List', `The list has been updated.`);
 					})
-					.catch((error) => {
+					.catch((error: Error) => {
 						setOverlay(false);
-						showErrorNotification('Update List Error', error);
+						console.log(error);
+						if (error.message.toLowerCase().includes('permission denied')) {
+							showErrorNotification('Permission Denied', 'You are not authorized to update this list.');
+						}
+						else {
+							showErrorNotification('Update List Error', error.message);
+						}
 					});
 			}
 		}, 250);
