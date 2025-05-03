@@ -29,7 +29,7 @@ function Root({ children }: ListsRootProps) {
 	const [confirmDialogProps, setConfirmDialogProps] = useState<ConfirmDialogProps>(defaultConfirmDialogProps);
 
 	const [overlay, setOverlay] = useState(false);
-	const { addList, addTask, updateTask, deleteList, deleteTask } = useLists();
+	const { addList, updateList, addTask, updateTask, deleteList, deleteTask } = useLists();
 
 	const inviteFetcher = useFetcher<{ email: string, sent: boolean, error: string }>();
 
@@ -91,16 +91,28 @@ function Root({ children }: ListsRootProps) {
 		closeDialog();
 		setOverlay(true);
 		setTimeout(() => {
-			addList(list)
-				.then(() => {
-					showSuccessNotification('Save List', `The '${list.name}' list has been saved.`);
-				})
-				.catch((error) => {
-					showErrorNotification('Add Organization Error', error);
-				})
-				.finally(() => {
-					setOverlay(false);
-				});
+			if (!list.createdAt) {
+				addList(list)
+					.then(() => {
+						setOverlay(false);
+						showSuccessNotification('Add List', `The list has been added.`);
+					})
+					.catch((error) => {
+						setOverlay(false);
+						showErrorNotification('Add List Error', error);
+					});
+			}
+			else {
+				updateList(list)
+					.then(() => {
+						setOverlay(false);
+						showSuccessNotification('Update List', `The list has been updated.`);
+					})
+					.catch((error) => {
+						setOverlay(false);
+						showErrorNotification('Update List Error', error);
+					});
+			}
 		}, 250);
 	}
 
